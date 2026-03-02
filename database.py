@@ -9,7 +9,7 @@ engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 Base.metadata.create_all(bind=engine)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(BASE_DIR, "movies.db")
+DATABASE_URL = "sqlite:////home/site/wwwroot/movies.db"
 
 SQLALCHEMY_DATABASE_URL = f"sqlite:///{DB_PATH}"
 

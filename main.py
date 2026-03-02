@@ -1,3 +1,5 @@
+from database import engine
+from models import Base
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 from database import Base, engine, SessionLocal
@@ -14,6 +16,8 @@ app = FastAPI(
     docs_url="/docs",
     openapi_url="/openapi.json"
 )
+Base.metadata.create_all(bind=engine)
+
 def get_db():
     db = SessionLocal()
     try:
@@ -21,7 +25,7 @@ def get_db():
     finally:
         db.close()
 
-# 🎬 Movies
+
 @app.post("/movies")
 def add_movie(title: str, genre: str, db: Session = Depends(get_db)):
     movie = Movie(title=title, genre=genre)
@@ -33,7 +37,7 @@ def add_movie(title: str, genre: str, db: Session = Depends(get_db)):
 def get_movies(db: Session = Depends(get_db)):
     return db.query(Movie).all()
 
-# ⭐ Ratings
+
 @app.post("/ratings")
 def add_rating(user_id: int, movie_id: int, rating: float, db: Session = Depends(get_db)):
     r = Rating(user_id=user_id, movie_id=movie_id, rating=rating)
@@ -41,7 +45,7 @@ def add_rating(user_id: int, movie_id: int, rating: float, db: Session = Depends
     db.commit()
     return {"message": "Rating added"}
 
-# 🧠 Reviews + Sentiment
+
 @app.post("/reviews")
 def add_review(user_id: int, movie_id: int, review: str, db: Session = Depends(get_db)):
     sentiment = analyze_sentiment(review)
@@ -50,7 +54,7 @@ def add_review(user_id: int, movie_id: int, review: str, db: Session = Depends(g
     db.commit()
     return {"sentiment_score": sentiment}
 
-# 🎯 Recommendations
+
 @app.get("/recommendations/{user_id}")
 def get_recommendations(user_id: int, db: Session = Depends(get_db)):
     ratings = db.query(Rating).all()
